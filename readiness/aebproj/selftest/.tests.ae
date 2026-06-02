@@ -1,0 +1,8 @@
+import build
+import aether
+main() {
+    b = build.start()
+    aether.program_test(b) {
+        source("selftest.ae")
+    }
+}

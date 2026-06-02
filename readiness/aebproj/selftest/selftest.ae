@@ -1,0 +1,6 @@
+// A program_test node: has main(), exits 0 (pass). Proves the compile/execute
+// phase gate — compiled under --compile-only (not run), run under --execute-only.
+extern println(s: string)
+main() {
+    println("selftest: running on the host")
+}
