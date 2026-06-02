@@ -1,0 +1,13 @@
+// app — the runnable that depends on the greeter library. Imports greeter's
+// source module by its repo-root-relative dotted path (the aeb cross-dir
+// import idiom) and calls its greeting(). Having a main() makes this node
+// runnable, so the readiness check can EXECUTE it and confirm the DAG
+// resolved end-to-end:  ./app  →  hello-from-aeb-dag
+
+import greeter.greeter_main (greeting)
+
+extern println(s: string)
+
+main() {
+    println(greeting())
+}

@@ -1,0 +1,15 @@
+// app target — the DAG root. Deps on the greeter leaf (build.dep, the
+// greppable edge) and imports its source module. aeb topo-sorts: greeter
+// builds first, then app. Readiness Test 2's root; running ./app proves the
+// whole multi-node aeb DAG resolved in-container.
+
+import build
+import aether
+
+main() {
+    b = build.start()
+    build.dep(b, "greeter/.build.ae")
+    aether.program(b) {
+        source("app.ae")
+    }
+}

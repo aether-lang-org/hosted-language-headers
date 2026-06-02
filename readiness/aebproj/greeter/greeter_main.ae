@@ -1,0 +1,14 @@
+// greeter_main — a mainable Aether source (has main()), so its .build.ae
+// target compiles + links to a runnable binary. The greeting() function is
+// also importable by sibling targets (the app node deps on + imports this
+// module). Readiness Test 2's leaf target.
+
+extern println(s: string)
+
+greeting() -> string {
+    return "hello-from-greeter"
+}
+
+main() {
+    println(greeting())
+}

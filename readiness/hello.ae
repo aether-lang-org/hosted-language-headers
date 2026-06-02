@@ -1,0 +1,17 @@
+// Readiness Test 1 — bare Aether toolchain.
+//
+// The minimal "does aetherc work in this container at all" probe. Compiled
+// by `ae build hello.ae -o hello` inside the aether-builder image; the
+// resulting binary, run, prints exactly:
+//
+//   aether-ready
+//
+// Used by aether-build's readiness check (and any image-bootstrap smoke):
+// if this compiles AND runs AND prints aether-ready, the Aether toolchain
+// (aetherc + gcc + libaether + stdlib) is sound in the container.
+
+extern println(s: string)
+
+main() {
+    println("aether-ready")
+}

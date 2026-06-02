@@ -1,0 +1,13 @@
+// greeter target — the leaf DAG node. Builds greeter_main.ae (which has a
+// main()) to a runnable binary, proving a leaf target compiles + links.
+// Its greeting() is also imported by the app node. Readiness Test 2's leaf.
+
+import build
+import aether
+
+main() {
+    b = build.start()
+    aether.program(b) {
+        source("greeter_main.ae")
+    }
+}
