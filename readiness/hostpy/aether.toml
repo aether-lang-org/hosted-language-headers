@@ -13,5 +13,10 @@
 # compile.
 
 [build]
-cflags = "-DAETHER_HAS_PYTHON ${AETHER_PYTHON_CFLAGS}"
+# Only -DAETHER_HAS_PYTHON here — the bridge's includes are the toolchain
+# image's vendored Python headers (/opt/aether/include/python), already on the
+# search path. No ${AETHER_PYTHON_CFLAGS} (aeb-ctr doesn't set it, and an
+# UNSET ${VAR} is left LITERAL — it would reach the linker as a bogus
+# filename: `ld: cannot find ${AETHER_PYTHON_CFLAGS}`).
+cflags = "-DAETHER_HAS_PYTHON"
 link_flags = "${AETHER_PYTHON_LDFLAGS}"
