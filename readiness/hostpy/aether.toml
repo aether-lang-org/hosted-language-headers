@@ -1,0 +1,17 @@
+# Build config for the host-Python readiness target.
+#
+# cflags enables the Python bridge (-DAETHER_HAS_PYTHON) and points at the
+# Python headers; link_flags links libpython. Both use ${VAR} expansion
+# (aether.toml supports env-var substitution; $(...) command substitution is
+# deliberately NOT supported — so the shell-out to discover flags happens in
+# aeb-ctr on the HOST, which passes the resolved values in as these env vars).
+#
+# AETHER_PYTHON_LDFLAGS is set by aeb-ctr via `python3 -c sysconfig` on the
+# host (no python3-dev / python3-config needed — sysconfig is in the runtime).
+# AETHER_PYTHON_CFLAGS likewise, if/when aeb-ctr probes includes; absent that,
+# the toolchain image's vendored /opt/aether/include/python covers the bridge
+# compile.
+
+[build]
+cflags = "-DAETHER_HAS_PYTHON ${AETHER_PYTHON_CFLAGS}"
+link_flags = "${AETHER_PYTHON_LDFLAGS}"

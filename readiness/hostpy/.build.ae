@@ -1,0 +1,13 @@
+// Minimal aether.program: NO link_flag/extra_source setters here on purpose —
+// those would force aeb's manual aetherc+gcc path, which does NOT read
+// aether.toml. Keeping it bare makes aeb take the `ae build` shell-out, which
+// reads aether.toml (and expands ${AETHER_PYTHON_*} from the env aeb-ctr set).
+import build
+import aether
+
+main() {
+    b = build.start()
+    aether.program(b) {
+        source("hostpy.ae")
+    }
+}

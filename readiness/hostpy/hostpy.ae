@@ -1,0 +1,18 @@
+// Readiness — Aether hosting Python. Proves the duality's payoff: this
+// COMPILES against the Python C-bridge headers (in the toolchain container)
+// and at runtime dlopens libpython3 (on the HOST). Neither side can do the
+// other's job — the sharpest demonstration of compile-in-container /
+// execute-on-host.
+//
+//   aeb-ctr hostpy/.build.ae   →   "hello from python, hosted by aether"
+//
+// Build flags (Python include/link) live in aether.toml as ${VAR}s; aeb-ctr
+// probes the HOST's python via sysconfig and passes them in (the host is the
+// correct flag source — the exe links against the host's libpython).
+
+import contrib.host.python
+
+main() {
+    python.run("print('hello from python, hosted by aether')")
+    python.finalize()
+}
