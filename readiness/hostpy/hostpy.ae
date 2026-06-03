@@ -6,9 +6,10 @@
 //
 //   aeb-ctr hostpy/.build.ae   →   "hello from python, hosted by aether"
 //
-// Build flags (Python include/link) live in aether.toml as ${VAR}s; aeb-ctr
-// probes the HOST's python via sysconfig and passes them in (the host is the
-// correct flag source — the exe links against the host's libpython).
+// No build flags needed (aether v0.209.0): `ae build` auto-links the bridge .a
+// from the import, and the bridge dlopens libpython at runtime. aeb-ctr probes
+// the HOST's python via sysconfig and passes AETHER_PYTHON_SONAME in as a
+// runtime env var (the bridge's loading-order step 1) — not a link flag.
 
 import contrib.host.python
 

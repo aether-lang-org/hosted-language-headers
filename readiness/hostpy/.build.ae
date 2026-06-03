@@ -4,10 +4,12 @@
 // compiles, so its main() never runs → the Python never fires.
 //
 // NO link_flag/extra_source setters here on purpose — those force aeb's manual
-// aetherc+gcc path, which does NOT read aether.toml. Bare keeps the `ae build`
-// shell-out that reads aether.toml (and expands ${AETHER_PYTHON_LDFLAGS} from
-// the env aeb-ctr set). The program exits 0 (Python prints, then returns) so
-// program_test counts it a PASS.
+// aetherc+gcc path, which does NOT read aether.toml and does NOT do the
+// import-driven bridge auto-link. Bare keeps the `ae build` shell-out, which
+// (as of aether v0.208.0) links libaether_host_python.a automatically because
+// hostpy.ae imports contrib.host.python. aether.toml is empty now — the bridge
+// dlopens libpython at runtime (v0.209.0), so no link flags. The program exits
+// 0 (Python prints, then returns) so program_test counts it a PASS.
 import build
 import aether
 
