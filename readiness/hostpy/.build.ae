@@ -1,13 +1,19 @@
-// Minimal aether.program: NO link_flag/extra_source setters here on purpose —
-// those would force aeb's manual aetherc+gcc path, which does NOT read
-// aether.toml. Keeping it bare makes aeb take the `ae build` shell-out, which
-// reads aether.toml (and expands ${AETHER_PYTHON_*} from the env aeb-ctr set).
+// aether.program_test (NOT aether.program): program_test compiles the binary
+// AND RUNS it — which is what makes the hosted Python actually execute (and
+// what aeb-ctr's execute-pass replays on the host). aether.program only
+// compiles, so its main() never runs → the Python never fires.
+//
+// NO link_flag/extra_source setters here on purpose — those force aeb's manual
+// aetherc+gcc path, which does NOT read aether.toml. Bare keeps the `ae build`
+// shell-out that reads aether.toml (and expands ${AETHER_PYTHON_LDFLAGS} from
+// the env aeb-ctr set). The program exits 0 (Python prints, then returns) so
+// program_test counts it a PASS.
 import build
 import aether
 
 main() {
     b = build.start()
-    aether.program(b) {
+    aether.program_test(b) {
         source("hostpy.ae")
     }
 }
