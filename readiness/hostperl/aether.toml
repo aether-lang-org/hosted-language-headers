@@ -1,0 +1,13 @@
+# Build config for the host-Perl readiness target.
+#
+# Intentionally empty. The Perl bridge dlopens libperl at runtime (no -lperl on
+# the link line), and `ae build` links the in-tree bridge .a (libaether_host_perl.a)
+# automatically whenever the source imports contrib.host.perl — the import is the
+# trigger. So this target needs NO cflags and NO link_flags.
+#
+# aeb-ctr probes the HOST's perl and passes AETHER_PERL_SONAME (the bridge's
+# runtime loading-order step 1) — an env var the bridge reads at runtime, not a
+# build flag, so it does not belong here.
+#
+# See ../../../aether/contrib/host/perl/README.md and the CHANGELOG dlopen-sweep
+# entry.

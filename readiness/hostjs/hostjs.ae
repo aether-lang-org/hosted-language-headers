@@ -1,0 +1,19 @@
+// Readiness — Aether hosting JavaScript (Duktape). Same proof as hostpy, for
+// the js bridge: COMPILES against the duktape C-bridge headers (in the
+// toolchain container, from the --with=js apt libduktape-dev kit) and at
+// runtime dlopens libduktape on the HOST. Compile-in-container /
+// execute-on-host, hosting a foreign language.
+//
+//   aeb-ctr hostjs/.build.ae   →   "hello from js, hosted by aether"
+//
+// No build flags (aether dlopen sweep): `ae build` auto-links the bridge .a
+// from the import; the bridge dlopens libduktape at runtime. aeb-ctr probes the
+// HOST's duktape soname and passes AETHER_JS_SONAME (the bridge's loading-order
+// step 1) — a runtime env var, not a link flag.
+
+import contrib.host.js
+
+main() {
+    js.run("print('hello from js, hosted by aether')")
+    js.finalize()
+}
