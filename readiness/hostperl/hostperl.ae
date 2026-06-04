@@ -6,13 +6,18 @@
 //   aeb-ctr hostperl/.build.ae   →   "hello from perl, hosted by aether"
 //
 // No build flags (aether dlopen sweep): `ae build` auto-links the bridge .a
-// from the import; the bridge dlopens libperl at runtime. aeb-ctr probes the
-// HOST's perl soname and passes AETHER_PERL_SONAME (the bridge's loading-order
-// step 1) — a runtime env var, not a link flag.
+// from the import; the bridge dlopens libperl at runtime. Pass
+// AETHER_PERL_SONAME (the host's exact libperl soname) when invoking aeb-ctr.
+//
+// NOTE: unlike the other bridges (lua.run / python.run / tcl.run), perl's
+// exports carry the full aether_perl_ prefix and are called BARE — there is no
+// `perl.` namespace form. So it's aether_perl_run / aether_perl_finalize, not
+// perl.run / perl.finalize. (The module.ae header comment showing
+// `perl.run_sandboxed` is misleading — verified by compile on v0.213.0.)
 
 import contrib.host.perl
 
 main() {
-    perl.run("print \"hello from perl, hosted by aether\\n\"")
-    perl.finalize()
+    aether_perl_run("print \"hello from perl, hosted by aether\\n\"")
+    aether_perl_finalize()
 }
