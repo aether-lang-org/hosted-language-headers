@@ -1,0 +1,13 @@
+# Build config for the host-Ruby readiness target.
+#
+# Intentionally empty. The Ruby bridge dlopens libruby at runtime (no -lruby on
+# the link line, ruby v0.211.0), and `ae build` links the in-tree bridge .a
+# (libaether_host_ruby.a) automatically whenever the source imports
+# contrib.host.ruby — the import is the trigger. So this target needs NO cflags
+# and NO link_flags.
+#
+# aeb-ctr passes AETHER_RUBY_SONAME (the bridge's runtime loading-order step 1)
+# if the user exported it — an env var the bridge reads at runtime, not a build
+# flag, so it does not belong here.
+#
+# See ../../../aether/contrib/host/ruby/README.md and the CHANGELOG dlopen entry.
