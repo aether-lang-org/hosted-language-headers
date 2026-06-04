@@ -1,13 +1,14 @@
-# Build config for the host-Js readiness target.
+# Build config for the host-Duktape readiness target.
 #
-# Intentionally empty. The Js bridge dlopens libjs at runtime (no -ljs on
-# the link line), and `ae build` links the in-tree bridge .a (libaether_host_js.a)
-# automatically whenever the source imports contrib.host.js — the import is the
-# trigger. So this target needs NO cflags and NO link_flags.
+# Intentionally empty. The Duktape bridge dlopens libduktape at runtime (no
+# -lduktape on the link line), and `ae build` links the in-tree bridge .a
+# (libaether_host_duktape.a) automatically whenever the source imports
+# contrib.host.duktape — the import is the trigger. So this target needs NO
+# cflags and NO link_flags.
 #
-# aeb-ctr probes the HOST's js and passes AETHER_JS_SONAME (the bridge's
-# runtime loading-order step 1) — an env var the bridge reads at runtime, not a
-# build flag, so it does not belong here.
+# aeb-ctr passes AETHER_DUKTAPE_SONAME (the host's exact libduktape soname, e.g.
+# libduktape.so.207) — an env var the bridge reads at runtime, not a build flag,
+# so it does not belong here.
 #
-# See ../../../aether/contrib/host/js/README.md and the CHANGELOG dlopen-sweep
-# entry.
+# See ../../../aether/contrib/host/duktape/README.md and the CHANGELOG [0.214.0]
+# (js → duktape rename).
