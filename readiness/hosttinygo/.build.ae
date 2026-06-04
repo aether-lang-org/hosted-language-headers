@@ -1,0 +1,16 @@
+// aether.program_test compiles AND runs hosttinygo.ae. It dep()s the .greet.ae
+// tinygo_lib node so libgreet.so is built (in-container, Phase 1) before this
+// binary runs (on-host, Phase 2) and tinygo.load()s it. Empty aether.toml —
+// the bridge .a (libaether_host_tinygo.a) auto-links from the
+// `import contrib.host.tinygo` in hosttinygo.ae. See
+// aeb/docs/host-tinygo-sidecar.md.
+import build
+import aether
+
+main() {
+    b = build.start()
+    build.dep(b, "hosttinygo/.greet.ae")
+    aether.program_test(b) {
+        source("hosttinygo.ae")
+    }
+}

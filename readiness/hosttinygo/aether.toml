@@ -1,0 +1,13 @@
+# Build config for the host-TinyGo readiness target.
+#
+# Intentionally empty. `ae build` links the in-tree bridge .a
+# (libaether_host_tinygo.a) automatically because hosttinygo.ae imports
+# contrib.host.tinygo — the import is the trigger.
+#
+# Unlike the six interpreter bridges, tinygo needs NO AETHER_*_SONAME: the
+# sidecar libgreet.so is loaded by explicit PATH (tinygo.load("...")), not by
+# soname discovery. TinyGo compiles greet.go → libgreet.so in the container
+# (Phase 1, via aether.tinygo_lib); the .so rides the mount to the host where
+# the Aether binary dlopens it (Phase 2). The host needs no TinyGo.
+#
+# See ../../../aether/contrib/host/tinygo/README.md.

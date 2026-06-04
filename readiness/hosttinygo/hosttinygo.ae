@@ -1,0 +1,36 @@
+// Readiness — Aether hosting Go (via TinyGo c-shared). The sidecar shape: a
+// TinyGo-built libgreet.so is loaded at runtime and its exported Go functions
+// called directly (no IPC, same address space). See
+// aeb/docs/host-tinygo-sidecar.md.
+//
+//   aeb-ctr hosttinygo/.build.ae   →   "hello from tinygo, hosted by aether"
+//                                       Add(2,40)=42  Answer()=42
+//
+// Phase 1 (in aeb-toolchain-tinygo:slim): TinyGo compiles greet.go → libgreet.so
+//   (the aether.tinygo_lib node) AND ae compiles this .ae → the test binary.
+// Phase 2 (on host): this binary runs and tinygo.load()s the sidecar .so that
+//   Phase 1 left on the mount. The host needs no TinyGo.
+//
+// The .so path is the deterministic build-tree location for this module's
+// tinygo_lib output: target/build/hosttinygo/lib/libgreet.so, relative to the
+// repo root (aeb-ctr runs the orchestrator with cwd = root in Phase 2).
+
+import contrib.host.tinygo
+
+main() {
+    so = "target/build/hosttinygo/lib/libgreet.so"
+
+    handle, err = tinygo.load(so)
+    if handle == null {
+        println("FAIL: tinygo.load(${so}): ${err}")
+        return
+    }
+
+    answer = tinygo.call_int_void(handle, "Answer")
+    sum = tinygo.call_int_int_int(handle, "Add", 2, 40)
+
+    println("hello from tinygo, hosted by aether")
+    println("Add(2,40)=${sum}  Answer()=${answer}")
+
+    tinygo.unload(handle)
+}

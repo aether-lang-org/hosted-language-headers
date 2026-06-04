@@ -1,0 +1,13 @@
+// The TinyGo sidecar node: compiles greet.go → libgreet.so via
+// aether.tinygo_lib. Output lands at target/build/hosttinygo/lib/libgreet.so.
+// The program_test in .build.ae dep()s this so it's built first.
+import build
+import aether
+
+main() {
+    b = build.start()
+    aether.tinygo_lib(b) {
+        go_source("greet.go")
+        output("libgreet.so")
+    }
+}
