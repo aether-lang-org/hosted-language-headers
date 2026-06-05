@@ -1,24 +1,26 @@
-// Readiness — Aether hosting Go (via TinyGo c-shared). The sidecar shape: a
-// TinyGo-built libgreet.so is loaded at runtime and its exported Go functions
-// called directly (no IPC, same address space). See
+// Readiness — Aether hosting Go (a native c-shared .so sidecar). The user's Go
+// is compiled to libgreet.so and loaded at runtime; its exported Go functions
+// are called directly (no IPC, same address space). See
 // aeb/docs/host-tinygo-sidecar.md.
 //
 //   aeb-ctr hosttinygo/.build.ae   →   "hello from tinygo, hosted by aether"
 //                                       Add(2,40)=42  Answer()=42
 //
-// Phase 1 (in aeb-toolchain-tinygo:slim): TinyGo compiles greet.go → libgreet.so
-//   (the aether.tinygo_lib node) AND ae compiles this .ae → the test binary.
+// Phase 1 (in aeb-toolchain-tinygo:slim): `go build -buildmode=c-shared` compiles
+//   greet.go → libgreet.so (the aether.tinygo_lib node in greet/) AND ae compiles
+//   this .ae → the test binary. (Standard `go`, not `tinygo` — TinyGo's c-shared
+//   is wasm-only; native sidecars need the standard Go toolchain.)
 // Phase 2 (on host): this binary runs and tinygo.load()s the sidecar .so that
-//   Phase 1 left on the mount. The host needs no TinyGo.
+//   Phase 1 left on the mount. The host needs no Go toolchain.
 //
-// The .so path is the deterministic build-tree location for this module's
-// tinygo_lib output: target/build/hosttinygo/lib/libgreet.so, relative to the
-// repo root (aeb-ctr runs the orchestrator with cwd = root in Phase 2).
+// The .so path is the deterministic build-tree location for the greet/ module's
+// tinygo_lib output: target/build/hosttinygo/greet/lib/libgreet.so, relative to
+// the repo root (aeb-ctr runs the orchestrator with cwd = root in Phase 2).
 
 import contrib.host.tinygo
 
 main() {
-    so = "target/build/hosttinygo/lib/libgreet.so"
+    so = "target/build/hosttinygo/greet/lib/libgreet.so"
 
     handle, err = tinygo.load(so)
     if handle == null {
