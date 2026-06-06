@@ -3,15 +3,13 @@
 # `ae build` auto-links the in-tree bridge .a (libaether_host_tinygo.a) because
 # hosttinygo.ae imports contrib.host.tinygo — the import is the trigger.
 #
-# link_flags = "-lffi": the tinygo bridge .a is the ONLY one of the host bridges
-# with a link-time dependency of its own — it compiles tinygo_call_dynamic under
-# AETHER_HAS_LIBFFI, so the .a has unresolved ffi_* symbols that need -lffi on
-# the link line. aether's import-driven auto-link adds the .a but NOT its -lffi
-# (the other five bridges have no such transitive lib), so we supply it here.
-# (Reported to aether-side as a gap; once their auto-link adds -lffi for the
-# tinygo bridge, this line can go.)
-[build]
-link_flags = "-lffi"
+# No [build] link_flags needed. The tinygo bridge .a is the ONLY host bridge with
+# a link-time dependency of its own — it compiles tinygo_call_dynamic under
+# AETHER_HAS_LIBFFI, so the .a has unresolved ffi_* symbols. As of aether
+# v0.217.0, the import-driven auto-link probes the resolved .a (`nm -u | grep
+# ffi_prep_cif`) and appends `-lffi` itself when the symbol is undefined — so the
+# old `link_flags = "-lffi"` workaround here is no longer required and has been
+# removed. (Was: ctr_notes.md Finding 2.)
 
 # Unlike the six interpreter bridges, tinygo needs NO AETHER_*_SONAME: the
 # sidecar libgreet.so is loaded by explicit PATH (tinygo.load("...")), not by
