@@ -103,6 +103,16 @@ cp /usr/include/duktape.h /usr/include/duk_config.h js/
   uses contrib.host.java need a JRE installed on their target host;
   the JAR is built upstream with a JDK that supports the Foreign
   Function & Memory API (Java 21+).
+- **Factor**. `contrib.host.factor` `#include`s **no** Factor
+  headers — the bridge is pure `dlopen`/`dlsym`, resolving the entire
+  Factor-side ABI (`factor_embed_eval` / `factor_embed_eval_free`)
+  against the forked `libfactor` at runtime. There is nothing to
+  capture here. Factor also isn't a stock distro library: the host
+  needs the embed-api fork
+  (`aether-lang-org/factor-language`)'s `libfactor` plus a
+  bootstrapped `factor.image` at runtime, supplied via
+  `$AETHER_FACTOR_SONAME` / `$AETHER_FACTOR_IMAGE` — not a build-time
+  `-dev` header package.
 - **TinyGo, Tcl, Go** — `contrib/host/{tinygo,tcl,go}` exist in
   Aether but aren't currently driven by this header-capture flow.
 - **Runtime shared libraries** (`libpython3.so`, `libruby.so`,
