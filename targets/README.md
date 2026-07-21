@@ -20,6 +20,20 @@ targets/<triple>/<lang>/<configured-header>
   x86_64-macos/python/pyconfig.h        # captured from python.org 3.12 on macOS 15
   x86_64-freebsd/python/pyconfig.h       # captured from FreeBSD 15 python 3.12
   x86_64-linux-gnu/python/pyconfig.h     # the real Debian 12 config (was the dispatcher)
+  x86_64-windows/python/pyconfig.h       # captured from python.org 3.12.8 on Windows
+```
+
+Ruby's configured header is `<ruby/config.h>` and is reached from a SEPARATE
+include root (`ruby-arch/`, mirrored by the shared tree). So ruby overlays
+provide their own `ruby-arch/` root that goes on `-I` *before* the shared one —
+no shared-tree removal needed (different `-I` dir, first match wins), unlike
+python where the shared `pyconfig.h` had to be deleted. A target may also carry
+platform-only headers that don't exist in the Debian-captured shared tree:
+
+```
+  x86_64-windows/ruby-arch/ruby/config.h                        # the win config
+  x86_64-windows/ruby-win/ruby/win32.h                          # Windows-only
+  x86_64-windows/ruby-win/ruby/internal/intern/select/win32.h   # Windows-only
 ```
 
 ## Consuming (a cross-build)
@@ -34,6 +48,15 @@ zig cc -target x86_64-macos-none \
 
 The overlay's `pyconfig.h` resolves first; the shared `Python.h` (which
 `#include "pyconfig.h"`) finds it there. No `-D` hand-patching, no dispatcher.
+
+Ruby (note the two overlay roots ahead of the shared `ruby/`):
+
+```
+zig cc -target x86_64-windows-gnu \
+  -I<repo>/targets/x86_64-windows/ruby-arch \
+  -I<repo>/targets/x86_64-windows/ruby-win \
+  -I<repo>/ruby  <runtime -I…>  -c aether_host_ruby.c
+```
 
 ## Why overlay dirs, not branch-per-platform
 
@@ -62,10 +85,13 @@ multiarch dispatcher which `#error`s off its host arch).
 
 | target | python | ruby | lua | perl | js |
 |---|---|---|---|---|---|
-| x86_64-linux-gnu | ✅ (Debian 12) | — | — | — | — |
-| x86_64-macos     | ✅ (3.12, py.org) | needs ruby-3.1-dev capture | — | — | — |
-| x86_64-freebsd   | ✅ (3.12) | needs capture | — | — | — |
-| x86_64-windows   | needs Windows py config | needs capture | — | — | — |
+| x86_64-linux-gnu | ✅ (Debian 12) | ✅ shared ruby-arch | — | — | — |
+| x86_64-macos     | ✅ (3.12, py.org) RUNS | needs ruby-3.1-dev capture | — | — | — |
+| x86_64-freebsd   | ✅ (3.12) compiles | needs capture | — | — | — |
+| x86_64-windows   | ✅ (3.12.8) RUNS | ✅ (3.1.4 ucrt) RUNS | — | — | — |
+
+RUNS = embedded interpreter proven executing inside a Linux-cross-built binary
+on a real machine of that target (macOS Hackintosh KVM; Windows 11 VM).
 
 python proven end-to-end: cross-built on Linux, embedded Python RUNS on real
 macOS 15 (via the overlay's config). Others follow the same capture pattern.
