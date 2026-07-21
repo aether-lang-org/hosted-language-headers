@@ -36,6 +36,15 @@ platform-only headers that don't exist in the Debian-captured shared tree:
   x86_64-windows/ruby-win/ruby/internal/intern/select/win32.h   # Windows-only
 ```
 
+When a target's language VERSION differs from the shared tree (Debian ruby is
+3.1; FreeBSD 15 ships ruby 3.4), don't mix a new arch `config.h` onto old
+portable headers — capture the target's WHOLE header tree as a self-contained
+overlay instead. `x86_64-freebsd/ruby/` is the full ruby-3.4 tree from .204
+(`ruby.h` + `ruby/` + the arch root `amd64-freebsd15/ruby/config.h`), consumed
+with `-Itargets/x86_64-freebsd/ruby/amd64-freebsd15 -Itargets/x86_64-freebsd/ruby`
+and NOT `-I<repo>/ruby`. The dlopen model makes this correct: the runtime IS
+3.4, so the headers should be 3.4 too.
+
 ## Consuming (a cross-build)
 
 Put the target overlay on the include path BEFORE the shared tree:
@@ -87,11 +96,11 @@ multiarch dispatcher which `#error`s off its host arch).
 |---|---|---|---|---|---|
 | x86_64-linux-gnu | ✅ (Debian 12) | ✅ shared ruby-arch | — | — | — |
 | x86_64-macos     | ✅ (3.12, py.org) RUNS | needs ruby-3.1-dev capture | — | — | — |
-| x86_64-freebsd   | ✅ (3.12) compiles | needs capture | — | — | — |
+| x86_64-freebsd   | ✅ (3.12.13) RUNS | ✅ (3.4.9, full tree) RUNS | — | — | — |
 | x86_64-windows   | ✅ (3.12.8) RUNS | ✅ (3.1.4 ucrt) RUNS | — | — | — |
 
 RUNS = embedded interpreter proven executing inside a Linux-cross-built binary
-on a real machine of that target (macOS Hackintosh KVM; Windows 11 VM).
+on a real machine of that target (macOS Hackintosh KVM; Windows 11 VM; FreeBSD 15 box .204).
 
 python proven end-to-end: cross-built on Linux, embedded Python RUNS on real
 macOS 15 (via the overlay's config). Others follow the same capture pattern.
