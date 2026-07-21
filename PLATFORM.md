@@ -33,16 +33,20 @@ headers populated by each language's `./configure` at packaging time:
 | Ruby   | `ruby/config.h` (in the `ruby-arch/` subtree) | sizeof(VALUE), pointer width, asm conventions |
 | duktape| `duk_config.h` | endianness, alignment, optional features |
 
-## When to branch
+## Per-target configs live in `targets/` (was: branch-per-platform)
 
-For another linux-x86_64-glibc snapshot, this branch suffices —
-overwrite contents, commit, retag.
+The portable header trees (`python/`, `ruby/`, …) are captured once here
+(linux-x86_64-glibc, Debian 12). The CONFIGURED files above — the only
+per-platform bits — live under `targets/<triple>/<lang>/` (see
+`targets/README.md`), captured from a real machine of each platform.
 
-For a different target (linux-arm64, linux-musl, macOS, …):
-**make a new branch**, e.g. `linux-arm64-glibc`, populate from
-a host running that target. The diff between branches will be
-small (mostly the configured `*config.h` files above) and is
-itself good documentation of the per-arch surface.
+This SUPERSEDES the earlier "make a branch per target" guidance. A branch
+per platform can't serve a **cross-build tool**, which needs every target
+available at once (it can't check out three branches). Overlay dirs give all
+targets simultaneously at a few-KB footprint (only the divergent configs), and
+the shared trees no longer ship a configured header at all (it comes only from
+the target overlay, so it can never be wrong-for-target).
 
-Don't try to merge multiple targets into one branch. Pick one,
-own it, document it here, branch for others.
+Capturing a new target: run on a machine of that platform with the language's
+headers present, copy its real `pyconfig.h`/`config.h`/`luaconf.h` into
+`targets/<triple>/<lang>/`. See `targets/README.md`.
